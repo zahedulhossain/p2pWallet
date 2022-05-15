@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MoneyTransferController;
+use App\Http\Controllers\UserSearchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,4 +30,9 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+
+    Route::get('/money-transfer', [MoneyTransferController::class, 'show'])->name('money-transfer.show');
+    Route::post('/money-transfer', [MoneyTransferController::class, 'store'])->name('money-transfer.store');
+
+    Route::get('/search-users', [UserSearchController::class, 'index'])->name('search-users.index');
 });
