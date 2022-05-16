@@ -11,11 +11,16 @@ A platform to exchange money between users made with laravel.
 - Copy env file: `cp .env.example .env`
 - Configure database in env file
 - Run Database migration: `php artisan migrate`
+- Generate App key: `php artisan key:generate`
 - Run Seeder (will generate some test data) `php artisan db:seed`
 
 ### 3rd-party api setup instructions
-- Api from "https://openexchangerates.org"
-  - Copy your app_id from 'Open Exchange Rates' account in env file
+- Api from https://openexchangerates.org
+  - Copy your app_id from `Open Exchange Rates` account in env file
+
+### Login credentials
+- username: `user@example.com`
+- password: `password`
 
 ## Contributing
 
