@@ -6,6 +6,7 @@ use App\Events\MoneyTransferred;
 use App\Models\MoneyTransfer;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Queries\MoneyTransferQuery;
 use App\Services\CurrencyConverter\CurrencyConverter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class MoneyTransferController extends Controller
         ]);
     }
 
-    public function store(Request $request, CurrencyConverter $converter)
+    public function store(Request $request, CurrencyConverter $converter, MoneyTransferQuery $moneyTransferQuery)
     {
         $request->validate([
             'user_id' => ['required', 'exists:users,id'],
@@ -51,36 +52,16 @@ class MoneyTransferController extends Controller
 
         $receiver = User::query()->with('wallet.currency')->find($request->user_id);
         if ($receiver->wallet->currency->code !== $senderWallet->currency->code) {
-            $convertedData = $converter->convert($request->input('amount'), $senderWallet->currency->code, $receiver->wallet->currency->code);
+            $convertedAmountArr = $converter->convert($request->input('amount'), $senderWallet->currency->code, $receiver->wallet->currency->code);
         }
 
-        DB::beginTransaction();
-        try {
-            $moneyTransfer = MoneyTransfer::query()->create([
-                'conversion_rate' => $convertedData['conversion_rate'] ?? null,
-                'amount' => $request->input('amount'),
-                'converted_amount' => $convertedData['converted_amount'] ?? null,
-                'from_wallet_id' => $senderWallet->id,
-                'to_wallet_id' => $receiver->wallet->id,
-                'note' => $request->input('note')
-            ]);
-
-            Transaction::query()->create([
-                'wallet_id' => $senderWallet->id,
-                'amount' => $request->input('amount'),
-                'action' => 'withdraw',
-            ]);
-
-            Transaction::query()->create([
-                'wallet_id' => $receiver->wallet->id,
-                'amount' => $convertedData['converted_amount'] ?? $request->input('amount'),
-                'action' => 'deposit',
-            ]);
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            throw $e;
-        }
+        $moneyTransfer = $moneyTransferQuery->transfer(
+            $request->input('amount'),
+            $senderWallet,
+            $receiver->wallet,
+            $request->input('note'),
+            $convertedAmountArr ?? null
+        );
 
         event(new MoneyTransferred($moneyTransfer, $sender, $receiver));
 
