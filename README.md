@@ -13,6 +13,7 @@ A platform to exchange money between users made with laravel.
 - Run Database migration: `php artisan migrate`
 - Generate App key: `php artisan key:generate`
 - Run Seeder (will generate some test data) `php artisan db:seed`
+- Set mail configuration in env file
 
 ### 3rd-party api setup instructions
 - Api from https://openexchangerates.org
