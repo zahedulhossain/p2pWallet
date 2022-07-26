@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->unique();
             $table->foreignId('wallet_id')->constrained();
             $table->double('amount');
             $table->enum('action', config('enums.transaction_action'));

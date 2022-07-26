@@ -127,13 +127,11 @@ class MoneyTransferTest extends TestCase
                 'rates' => ['EUR' => $rate = '0.96'],
             ], 200, []),
         ]);
-        Event::fake();
 
-        $response = $this->actingAs($user)->post('/money-transfer', [
+        $response = $this->actingAs($user)->postJson('/money-transfer', [
             'user_id' => $user2->id,
             'amount' => $amount = $this->faker->randomFloat(2, 10, 100)
         ]);
-        Event::assertDispatched(MoneyTransferred::class);
 
         $response->assertStatus(302);
         $response->assertSessionHas(['flash.banner' => 'Money Sent.']);

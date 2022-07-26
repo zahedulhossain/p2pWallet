@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Events\MoneyTransferred;
-use App\Models\MoneyTransfer;
-use App\Models\Transaction;
 use App\Models\User;
 use App\Queries\MoneyTransferQuery;
 use App\Services\CurrencyConverter\CurrencyConverter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class MoneyTransferController extends Controller
